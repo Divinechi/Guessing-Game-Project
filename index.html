@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guessing Game</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        color: green;
+      }
+      #result {
+        font-size: 1.2em;
+        margin-top: 20px;
+        color: white;
+      }
+      .card-container {
+        perspective: 1000px;
+        display: inline-block;
+      }
+      .card {
+        width: 200px;
+        height: 300px;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 0.5s;
+      }
+      .card.flipped {
+        transform: rotateY(180deg);
+      }
+      .card-face {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        backface-visibility: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.5em;
+        border: 1px solid #ccc;
+        background-color: #f0f0f0;
+      }
+      .card-front {
+        z-index: 2;
+      }
+      .card-back {
+        transform: rotateY(180deg);
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Guessing Game</h1>
+    <p>Guess a number between 1 and 100:</p>
+    <input type="text" id="guessInput" />
+    <button onclick="checkGuess()">Submit Guess</button>
+    <p id="result"></p>
+
+    <div class="card-container" id="cardContainer">
+      <div class="card" id="card">
+        <div class="card-face card-front">
+          <p>Hidden Number</p>
+        </div>
+        <div class="card-face card-back">
+          <p id="hiddenNumberDisplay"></p>
+        </div>
+      </div>
+    </div>
+
+    <button onclick="playAgain()">Play Again</button>
+
+    <script>
+      let hiddenNumber;
+      let remainingGuesses;
+
+      resetGame();
+
+      function resetGame() {
+        hiddenNumber = Math.floor(Math.random() * 100) + 1;
+        remainingGuesses = 3;
+        document.getElementById("guessInput").value = "";
+        document.getElementById("result").textContent = "";
+        document.getElementById("hiddenNumberDisplay").textContent = "";
+        document.getElementById("card").classList.remove("flipped");
+        document.getElementById("guessInput").disabled = false;
+        document.querySelector("button").disabled = false;
+      }
+
+      function checkGuess() {
+        let guessInput = document.getElementById("guessInput").value;
+        let resultDisplay = document.getElementById("result");
+
+        if (isNaN(guessInput) || guessInput < 1 || guessInput > 100) {
+          resultDisplay.textContent =
+            "Please enter a valid number between 1 and 100.";
+          return;
+        }
+
+        remainingGuesses--;
+
+        if (guessInput == hiddenNumber) {
+          resultDisplay.textContent =
+            "Congratulations! You guessed the correct number.";
+          disableInput();
+          revealHiddenNumber();
+        } else if (remainingGuesses === 0) {
+          resultDisplay.textContent =
+            "Sorry, you've run out of guesses. The correct number was " +
+            hiddenNumber +
+            ".";
+          disableInput();
+          revealHiddenNumber();
+        } else {
+          if (guessInput < hiddenNumber) {
+            resultDisplay.textContent =
+              "Too low! You have " + remainingGuesses + " guesses remaining.";
+          } else {
+            resultDisplay.textContent =
+              "Too high! You have " + remainingGuesses + " guesses remaining.";
+          }
+        }
+      }
+
+      function disableInput() {
+        document.getElementById("guessInput").disabled = true;
+        document.querySelector("button").disabled = true;
+      }
+
+      function revealHiddenNumber() {
+        document.getElementById("hiddenNumberDisplay").textContent =
+          hiddenNumber;
+        document.getElementById("card").classList.add("flipped");
+      }
+
+      function playAgain() {
+        resetGame();
+      }
+    </script>
+  </body>
+</html>
